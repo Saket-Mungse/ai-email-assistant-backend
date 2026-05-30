@@ -1,0 +1,9 @@
+package com.saketmungsemajorprojects.AI_Email_Writer.dto;
+
+import lombok.Data;
+
+@Data
+public class EmailRequest {
+    private String emailContent;
+    private String toneOfReply;
+}
