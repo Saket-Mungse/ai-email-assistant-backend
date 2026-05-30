@@ -1,6 +1,6 @@
-# 📧 Smart AI Email Assistant
+# 📧 AI Email Writer
 
-A full-stack AI-powered email assistant that generates intelligent, context-aware email replies using **Google Gemini API**. Includes a **Chrome Extension** that integrates directly into Gmail — suggesting AI-generated responses without leaving your inbox.
+A full-stack AI-powered email assistant that generates smart, context-aware email replies with tone selection. Includes a **Spring Boot backend**, **React frontend**, and a **Chrome Extension** that injects an AI reply button directly inside Gmail.
 
 ---
 
@@ -10,50 +10,44 @@ A full-stack AI-powered email assistant that generates intelligent, context-awar
 |---|---|
 | Language | Java 21 |
 | Framework | Spring Boot 3, Spring MVC |
-| AI Integration | Google Gemini API |
-| ORM | Spring Data JPA, Hibernate |
-| Database | MySQL / H2 (In-Memory) |
-| Logging | AOP (Aspect-Oriented Programming) |
-| API Documentation | Swagger / OpenAPI |
-| Frontend | HTML, JavaScript, Tailwind CSS |
+| HTTP Client | Spring WebClient (Reactive) |
+| AI Integration | OpenRouter AI API (Free LLM) |
+| Frontend | React, Material UI |
 | Browser Extension | Chrome Extension (Manifest V3) |
 | Build Tool | Maven |
-| Testing | JUnit, Mockito |
 
 ---
 
 ## ✨ Features
 
-- **AI Email Generation** — Sends email context to Google Gemini API and gets smart, human-like reply suggestions
-- **Chrome Extension** — Injects AI reply button directly inside Gmail UI for one-click email suggestions
-- **REST APIs** — Clean REST endpoints for email generation, storage, and retrieval
-- **Layered Architecture** — Controller → Service → Repository separation for maintainability
-- **AOP Logging** — Automatic logging of all API calls using Spring AOP without polluting business logic
-- **Global Exception Handling** — Centralized error handling for consistent API responses
-- **Bean Validation** — Input validation before reaching the service layer
-- **Swagger Documentation** — 10+ fully documented API endpoints
+- **AI Email Generation** — Sends email content to OpenRouter AI API and gets smart professional replies
+- **5 Tone Options** — Professional, Friendly, Formal, Casual, Apologetic
+- **Chrome Extension** — Uses MutationObserver to detect Gmail compose window and injects AI Reply button dynamically
+- **React Frontend** — Clean UI with email input, tone selector, generated reply display and copy to clipboard
+- **Non-blocking API calls** — Spring WebClient for reactive, non-blocking AI API communication
+- **CORS enabled** — Seamless communication between frontend, backend and Chrome Extension
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-Gmail (Browser)
-     │
-     ▼
-Chrome Extension (JavaScript)
-     │  Captures email context
-     ▼
+React Frontend / Chrome Extension (Gmail)
+        │
+        │  POST /api/email/generate
+        ▼
+Spring Boot Backend (Port 8080)
+        │
+        │  OpenRouter AI API call (WebClient)
+        ▼
+OpenRouter AI (Free LLM)
+        │
+        │  Returns AI-generated email reply
+        ▼
 Spring Boot Backend
-     │  Sends prompt to Gemini
-     ▼
-Google Gemini API
-     │  Returns AI-generated reply
-     ▼
-Chrome Extension
-     │  Injects reply into Gmail compose box
-     ▼
-User Reviews & Sends Email
+        │
+        ▼
+React Frontend / Chrome Extension
 ```
 
 ---
@@ -61,27 +55,22 @@ User Reviews & Sends Email
 ## 📁 Project Structure
 
 ```
-ai-email-assistant/
-├── src/
-│   ├── main/
-│   │   ├── java/com/saket/emailassistant/
-│   │   │   ├── aspect/           # AOP logging
-│   │   │   ├── config/           # Swagger, CORS config
-│   │   │   ├── controller/       # REST controllers
-│   │   │   ├── dto/              # Request/Response DTOs
-│   │   │   ├── entity/           # JPA entities
-│   │   │   ├── exception/        # Global exception handler
-│   │   │   ├── repository/       # Spring Data JPA repos
-│   │   │   └── service/         # Business logic + Gemini integration
-│   │   └── resources/
-│   │       └── application.properties
-│   └── test/
-├── extension/                    # Chrome Extension files
-│   ├── manifest.json
-│   ├── content.js
-│   ├── background.js
-│   └── popup.html
-└── pom.xml
+AI_Email_Writer/
+├── AI_Email_Writer/                  # Spring Boot Backend
+│   └── src/main/java/
+│       └── controller/               # REST Controller
+│       └── service/                  # AI API integration logic
+│       └── dto/                      # EmailRequest DTO
+│   └── src/main/resources/
+│       └── application.properties    # API keys and config
+│
+├── ai-email-writer-frontend/         # React Frontend
+│   └── src/
+│       └── App.jsx                   # Main UI component
+│
+└── ai-email-writer-ext/              # Chrome Extension
+    └── content.js                    # Gmail injection script
+    └── manifest.json                 # Extension config
 ```
 
 ---
@@ -90,10 +79,20 @@ ai-email-assistant/
 
 | Method | Endpoint | Description |
 |---|---|---|
-| POST | `/api/email/generate` | Generate AI reply using Gemini API |
-| GET | `/api/email/all` | Get all stored email replies |
-| GET | `/api/email/{id}` | Get email reply by ID |
-| DELETE | `/api/email/{id}` | Delete an email reply |
+| POST | `/api/email/generate` | Generate AI email reply |
+
+**Request Body:**
+```json
+{
+  "emailContent": "Original email text here",
+  "toneOfReply": "professional"
+}
+```
+
+**Response:**
+```
+Generated professional email reply text...
+```
 
 ---
 
@@ -102,65 +101,87 @@ ai-email-assistant/
 ### Prerequisites
 - Java 21
 - Maven
-- MySQL
-- Google Gemini API Key — [Get it here](https://makersuite.google.com/app/apikey)
+- Node.js
+- OpenRouter API Key — [Get free key here](https://openrouter.ai)
 
 ### Run Backend
 
 ```bash
-# Clone the repository
-git clone https://github.com/saketmungse/ai-email-assistant-backend.git
-cd ai-email-assistant-backend
+cd AI_Email_Writer
 
-# Add your Gemini API key in application.properties
-gemini.api.key=YOUR_GEMINI_API_KEY
+# Add your API key in application.properties
+groq.api.key=YOUR_OPENROUTER_API_KEY
 
-# Build and run
+# Run
 mvn spring-boot:run
+```
+
+### Run Frontend
+
+```bash
+cd ai-email-writer-frontend
+npm install
+npm run dev
 ```
 
 ### Install Chrome Extension
 
 1. Open Chrome → go to `chrome://extensions/`
-2. Enable **Developer Mode** (top right)
+2. Enable **Developer Mode** (top right toggle)
 3. Click **Load unpacked**
-4. Select the `/extension` folder from this project
-5. Open Gmail — you'll see the AI Reply button in the compose window
+4. Select the `ai-email-writer-ext` folder
+5. Open Gmail — AI Reply button will appear in compose window
 
 ---
 
-## 🔍 Swagger API Docs
+## 🎯 How It Works
 
-```
-http://localhost:8080/swagger-ui/index.html
-```
+### React Frontend
+1. User pastes original email content
+2. Selects desired tone (Professional/Friendly/Formal/Casual/Apologetic)
+3. Clicks "Generate Reply"
+4. AI-generated reply appears with copy to clipboard option
+
+### Chrome Extension
+1. MutationObserver watches for Gmail compose window to open
+2. Once detected, injects "AI Reply" button into Gmail toolbar
+3. On click, reads email content from Gmail DOM
+4. Sends to Spring Boot backend
+5. Inserts AI reply directly into compose box
 
 ---
 
 ## 📊 Performance Highlights
 
-- Average API response time under **200ms**
-- AOP logging reduced manual debugging effort by **~30%**
-- Chrome Extension injects AI suggestions in under **2 seconds** from Gmail
+- AI reply generation under **2 seconds** response time
+- Non-blocking API calls using **Spring WebClient**
+- Chrome Extension detects compose window in under **500ms**
 
 ---
 
 ## 🗺️ Roadmap
 
-- [x] Gemini API Integration for email generation
-- [x] REST APIs for email management
-- [x] AOP-based logging
-- [x] Global Exception Handling
-- [x] Swagger Documentation
+- [x] OpenRouter AI API integration
+- [x] 5 tone options for reply generation
+- [x] React frontend with Material UI
 - [x] Chrome Extension with Gmail injection
-- [ ] User Authentication
-- [ ] Email tone selection (Formal / Casual / Friendly)
-- [ ] Multi-language support
+- [x] MutationObserver for dynamic compose detection
+- [ ] Save reply history
+- [ ] Custom tone input
+- [ ] Deploy backend to cloud
+
+---
+
+## ⚠️ Important
+
+- Never commit your `application.properties` with real API keys to GitHub
+- Add `application.properties` to `.gitignore`
+- Use environment variables for API keys in production
 
 ---
 
 ## 👨‍💻 Author
 
-**Saket Nitin Mungse**  
-B.Tech Information Technology — SGGSIE&T, Nanded  
-saketmungse20@gmail.com
+**Saket Nitin Mungse**
+B.Tech Information Technology — SGGSIE&T, Nanded
+[LinkedIn](#) | [Portfolio](#) | saketmungse20@gmail.com
