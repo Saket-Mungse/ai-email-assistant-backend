@@ -166,17 +166,6 @@ npm run dev
 - [x] React frontend with Material UI
 - [x] Chrome Extension with Gmail injection
 - [x] MutationObserver for dynamic compose detection
-- [ ] Save reply history
-- [ ] Custom tone input
-- [ ] Deploy backend to cloud
-
----
-
-## ⚠️ Important
-
-- Never commit your `application.properties` with real API keys to GitHub
-- Add `application.properties` to `.gitignore`
-- Use environment variables for API keys in production
 
 ---
 
@@ -184,4 +173,5 @@ npm run dev
 
 **Saket Nitin Mungse**
 B.Tech Information Technology — SGGSIE&T, Nanded
+
 saketmungse20@gmail.com
