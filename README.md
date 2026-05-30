@@ -184,4 +184,4 @@ npm run dev
 
 **Saket Nitin Mungse**
 B.Tech Information Technology — SGGSIE&T, Nanded
-[LinkedIn](#) | [Portfolio](#) | saketmungse20@gmail.com
+saketmungse20@gmail.com
